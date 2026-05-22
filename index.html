@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="toolbar">
+        <nav class="view-tabs">
+            <button type="button" id="tab-bw" class="tab-btn active" data-view="bw">黑白层</button>
+            <button type="button" id="tab-red" class="tab-btn" data-view="red">红色层</button>
+            <button type="button" id="tab-preview" class="tab-btn" data-view="preview">预览</button>
+        </nav>
+        <div class="toolbar-divider"></div>
+        <div class="actions">
+            <button type="button" id="btn-toggle-grid" class="action-btn">网格线: 开</button>
+        </div>
+    </header>
+
+    <main class="canvas-container">
+        <canvas id="pixel-canvas"></canvas>
+    </main>
+
+    <footer class="output-panel">
+        <div class="output-group">
+            <label for="output-bw">黑白层 C++ 数组</label>
+            <div class="textarea-wrapper">
+                <textarea id="output-bw" readonly placeholder="等待生成..."></textarea>
+                <button type="button" id="btn-copy-bw" class="copy-btn">复制</button>
+            </div>
+        </div>
+        
+        <div class="output-group">
+            <label for="output-red">红色层 C++ 数组</label>
+            <div class="textarea-wrapper">
+                <textarea id="output-red" readonly placeholder="等待生成..."></textarea>
+                <button type="button" id="btn-copy-red" class="copy-btn">复制</button>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
