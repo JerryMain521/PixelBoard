@@ -33,23 +33,24 @@ export function screenToCell(mouseX, mouseY, view, config) {
  * @returns {string[]} 长度为 16 的字符串数组，每个元素形如 "0x3333"
  */
 export function layerToHex(layer) {
-    const hexArray = [];
+    const cols = layer[0]?.length ?? 0;
+    const numWords = Math.ceil(cols / 16);
+    const allWords = [];
 
-    for (let r = 0; r < 16; r++) {
-        let rowValue = 0;
-        for (let c = 0; c < 16; c++) {
-            // 如果该点被标记（值为 1），则将对应权重的比特位置 1
-            // c = 0 时移位 15（最高位 MSB），c = 15 时移位 0（最低位 LSB）
-            if (layer[r][c] === 1) {
-                rowValue |= (1 << (15 - c));
+    for (const row of layer) {
+        for (let w = 0; w < numWords; w++) {
+            let val = 0;
+            for (let b = 0; b < 16; b++) {
+                const c = w * 16 + b;
+                if (c < cols && row[c] === 1) {
+                    val |= (1 << (15 - b));
+                }
             }
+            allWords.push('0x' + (val >>> 0).toString(16).toUpperCase().padStart(4, '0'));
         }
-        // 将数字转为 16 进制，并通过 padStart 补齐 4 位大写，输出形如 "0x3333"
-        const hexStr = '0x' + (rowValue >>> 0).toString(16).toUpperCase().padStart(4, '0');
-        hexArray.push(hexStr);
     }
 
-    return hexArray;
+    return allWords; // 一维 string[]，长度 = rows * numWords
 }
 
 /**

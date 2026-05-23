@@ -160,3 +160,38 @@ body {
     background-color: #e8e8ed;
     border-color: #86868b;
 }
+
+.size-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.size-inputs label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.size-inputs input {
+    padding: 2px 4px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #2a2a2a;
+    color: #fff;
+    text-align: center;
+}
+
+.size-inputs button {
+    padding: 4px 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #3a3a3a;
+    color: #fff;
+    cursor: pointer;
+}
+
+.size-inputs button:hover {
+    background: #4a4a4a;
+}

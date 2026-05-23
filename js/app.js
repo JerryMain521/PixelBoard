@@ -23,7 +23,10 @@ function init() {
         outputBw: document.getElementById('output-bw'),
         outputRed: document.getElementById('output-red'),
         btnCopyBw: document.getElementById('btn-copy-bw'),
-        btnCopyRed: document.getElementById('btn-copy-red')
+        btnCopyRed: document.getElementById('btn-copy-red'),
+        inputRows: document.getElementById('input-rows'),
+        inputCols: document.getElementById('input-cols'),
+        btnResize: document.getElementById('btn-resize'),
     };
 
     // 2. canvas 铺满整个视口，格子等分屏幕
@@ -52,6 +55,28 @@ function init() {
         state.config.baseCellSize = Math.floor(Math.min(window.innerWidth / state.config.cols, window.innerHeight / state.config.rows));
         state.view.offsetX = (canvas.width - state.config.cols * state.config.baseCellSize * state.view.scale) / 2;
         state.view.offsetY = (canvas.height - state.config.rows * state.config.baseCellSize * state.view.scale - 100) / 2;
+        render(ctx);
+    });
+
+    document.getElementById('btn-resize').addEventListener('click', () => {
+        const newRows = Math.max(1, parseInt(domElements.inputRows.value) || 16);
+        const newCols = Math.max(1, parseInt(domElements.inputCols.value) || 16);
+
+        // 更新配置
+        state.config.rows = newRows;
+        state.config.cols = newCols;
+
+        // 重建两个图层数组（新尺寸，清空为 0）
+        state.bwLayer  = Array.from({ length: newRows }, () => new Array(newCols).fill(0));
+        state.redLayer = Array.from({ length: newRows }, () => new Array(newCols).fill(0));
+
+        // 重新计算 baseCellSize 并居中
+        state.config.baseCellSize = Math.floor(Math.min(canvas.width / newCols, canvas.height / newRows));
+        state.view.scale = 0.7;
+        state.view.offsetX = (canvas.width  - newCols * state.config.baseCellSize * state.view.scale) / 2;
+        state.view.offsetY = (canvas.height - newRows * state.config.baseCellSize * state.view.scale - 100) / 2;
+
+        exporter.updateExportPanel(domElements.outputBw, domElements.outputRed);
         render(ctx);
     });
 }

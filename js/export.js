@@ -13,19 +13,19 @@ export const exporter = {
      * @returns {string} 完整的 C++ 代码块字符串
      */
     buildCppString(layer, arrayName) {
-        // 调用 utils 模块逐行完成 16 位位运算转换，得到 16 个十六进制字符串组成的数组
-        const hexLines = layerToHex(layer);
-        
-        // 按照每行 4 个元素的排版格式进行格式化拼接
-        let result = `uint16_t ${arrayName}[16] = {\n`;
-        
-        for (let i = 0; i < 16; i += 4) {
-            const chunk = hexLines.slice(i, i + 4).join(', ');
-            // 如果是最后四个元素，末尾不需要加逗号
-            const trailingComma = (i + 4 < 16) ? ',' : '';
-            result += `    ${chunk}${trailingComma}\n`;
+        const rows = layer.length;
+        const cols = layer[0]?.length ?? 0;
+        const numWords = Math.ceil(cols / 16);
+        const allWords = layerToHex(layer);
+
+        let result = `uint16_t ${arrayName}[${rows * numWords}] = {\n`;
+
+        for (let r = 0; r < rows; r++) {
+            const chunk = allWords.slice(r * numWords, (r + 1) * numWords).join(', ');
+            const comma = r < rows - 1 ? ',' : '';
+            result += `    ${chunk}${comma}  // row ${r}\n`;
         }
-        
+
         result += `};`;
         return result;
     },
