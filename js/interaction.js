@@ -89,15 +89,48 @@ export const interaction = {
             });
         }
 
-        // 6. 绑定底部的两个复制按钮
+        // 6. 导入/导出模式切换
+        if (domElements.btnToggleMode) {
+            domElements.btnToggleMode.addEventListener('click', () => {
+                state.importMode = !state.importMode;
+                if (state.importMode) {
+                    domElements.btnToggleMode.textContent = '模式: 导入';
+                    domElements.outputBw?.removeAttribute('readonly');
+                    domElements.outputRed?.removeAttribute('readonly');
+                    domElements.btnCopyBw && (domElements.btnCopyBw.textContent = '应用');
+                    domElements.btnCopyRed && (domElements.btnCopyRed.textContent = '应用');
+                } else {
+                    domElements.btnToggleMode.textContent = '模式: 导出';
+                    domElements.outputBw?.setAttribute('readonly', '');
+                    domElements.outputRed?.setAttribute('readonly', '');
+                    domElements.btnCopyBw && (domElements.btnCopyBw.textContent = '复制');
+                    domElements.btnCopyRed && (domElements.btnCopyRed.textContent = '复制');
+                    exporter.updateExportPanel();
+                }
+            });
+        }
+
+        // 7. 绑定底部的两个按钮（导出模式下复制，导入模式下应用数组）
         if (domElements.btnCopyBw && domElements.outputBw) {
             domElements.btnCopyBw.addEventListener('click', () => {
-                exporter.copyToClipboard(domElements.outputBw.value, domElements.btnCopyBw);
+                if (state.importMode) {
+                    if (exporter.importLayer(domElements.outputBw.value, 'bw')) {
+                        refreshApp();
+                    }
+                } else {
+                    exporter.copyToClipboard(domElements.outputBw.value, domElements.btnCopyBw);
+                }
             });
         }
         if (domElements.btnCopyRed && domElements.outputRed) {
             domElements.btnCopyRed.addEventListener('click', () => {
-                exporter.copyToClipboard(domElements.outputRed.value, domElements.btnCopyRed);
+                if (state.importMode) {
+                    if (exporter.importLayer(domElements.outputRed.value, 'red')) {
+                        refreshApp();
+                    }
+                } else {
+                    exporter.copyToClipboard(domElements.outputRed.value, domElements.btnCopyRed);
+                }
             });
         }
     }

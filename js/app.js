@@ -20,6 +20,7 @@ function init() {
         tabRed: document.getElementById('tab-red'),
         tabPreview: document.getElementById('tab-preview'),
         btnToggleGrid: document.getElementById('btn-toggle-grid'),
+        btnToggleMode: document.getElementById('btn-toggle-mode'),
         outputBw: document.getElementById('output-bw'),
         outputRed: document.getElementById('output-red'),
         btnCopyBw: document.getElementById('btn-copy-bw'),

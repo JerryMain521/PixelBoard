@@ -27,30 +27,69 @@ export function screenToCell(mouseX, mouseY, view, config) {
 }
 
 /**
- * 将 16×16 的二维数组转换为 C++ 风格的十六进制字符串数组
- * 规定：每一行左侧第一个元素 [row][0] 代表 16-bit 整数的最高位 (MSB)
- * @param {number[][]} layer - 16×16 的二维数组（元素为 0 或 1）
- * @returns {string[]} 长度为 16 的字符串数组，每个元素形如 "0x3333"
+ * 将二维数组转换为 C++ 风格的 uint8_t 十六进制字符串数组
+ * 规定：每一行左侧第一个元素 [row][0] 代表 8-bit 整数的最高位 (MSB)
+ * @param {number[][]} layer - 二维数组（元素为 0 或 1）
+ * @returns {string[]} 长度 = rows * ceil(cols/8) 的字符串数组，每个元素形如 "0x3F"
  */
 export function layerToHex(layer) {
     const cols = layer[0]?.length ?? 0;
-    const numWords = Math.ceil(cols / 16);
+    const numWords = Math.ceil(cols / 8);
     const allWords = [];
 
     for (const row of layer) {
         for (let w = 0; w < numWords; w++) {
             let val = 0;
-            for (let b = 0; b < 16; b++) {
-                const c = w * 16 + b;
+            for (let b = 0; b < 8; b++) {
+                const c = w * 8 + b;
                 if (c < cols && row[c] === 1) {
-                    val |= (1 << (15 - b));
+                    val |= (1 << (7 - b));
                 }
             }
-            allWords.push('0x' + (val >>> 0).toString(16).toUpperCase().padStart(4, '0'));
+            allWords.push('0x' + (val >>> 0).toString(16).toUpperCase().padStart(2, '0'));
         }
     }
 
-    return allWords; // 一维 string[]，长度 = rows * numWords
+    return allWords;
+}
+
+/**
+ * 从 C++ 数组文本中提取所有十六进制数值
+ * @param {string} text - 包含 0xNN 格式的文本
+ * @returns {number[]} 解析出的整数值数组
+ */
+export function parseHexArray(text) {
+    const hexPattern = /0x[0-9A-Fa-f]{1,2}/g;
+    const matches = text.match(hexPattern) || [];
+    return matches.map(h => parseInt(h, 16));
+}
+
+/**
+ * 将 uint8_t 十六进制数组还原为二维图层数组
+ * @param {number[]} hexValues - 解析后的整数值数组
+ * @param {number} rows - 目标行数
+ * @param {number} cols - 目标列数
+ * @returns {number[][]} 还原的二维数组
+ */
+export function hexToLayer(hexValues, rows, cols) {
+    const numWords = Math.ceil(cols / 8);
+    const layer = initLayer(rows, cols, 0);
+
+    for (let r = 0; r < rows; r++) {
+        for (let w = 0; w < numWords; w++) {
+            const idx = r * numWords + w;
+            if (idx >= hexValues.length) break;
+            const val = hexValues[idx];
+            for (let b = 0; b < 8; b++) {
+                const c = w * 8 + b;
+                if (c < cols && (val & (1 << (7 - b)))) {
+                    layer[r][c] = 1;
+                }
+            }
+        }
+    }
+
+    return layer;
 }
 
 /**

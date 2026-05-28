@@ -18,6 +18,9 @@ export const state = {
     // 网格线是否显示
     showGrid: true,
 
+    // 模式开关：false = 像素→数组（导出），true = 数组→像素（导入）
+    importMode: false,
+
     // 视图变换状态（用于滚轮缩放与画布平移）
     view: {
         scale: 1,       // 当前缩放倍数
